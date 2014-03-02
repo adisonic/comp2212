@@ -1,7 +1,18 @@
 /* File parser.mly */
+open ParseTree
+
 %token <int> INT
-%token PLUS MINUS TIMES DIV
-%token LPAREN RPAREN
+%toke <string> STRING
+%token PLUS MINUS TIMES DIV EXP MOD  
+%token INCRE DECRE INCRE_EQUAL DECRE_EQUAL
+%token ASSIGN
+%token GREATER GREATER_OR_EQUAL LESSER LESSER_OR_EQUAL EQUAL NOT_EQUAL
+%token OR AND 
+%token NOT
+%token LPAREN RPAREN LCURLYB RCURLYB
+%token OPENSTREAM CLOSESTREAM 
+%token IF THEN ELSE ELSE_IF
+%token TRUE FALSE
 %token EOL
 %left PLUS MINUS        /* lowest precedence */
 %left TIMES DIV         /* medium precedence */
@@ -12,6 +23,7 @@
 main:
    expr EOL                { $1 }
 ;
+
 expr:
    INT                     { $1 }
  | LPAREN expr RPAREN      { $2 }
