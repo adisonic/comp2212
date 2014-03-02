@@ -43,7 +43,7 @@ rule token = parse
     | "then"      { THEN } 
     | "else"      { ELSE } 
     | "while"     { WHILE }
-    
+    | "else_if"   { ELSE_IF }
     | "true"      { TRUE }
     | "false"     { FALSE }
     | ['a'-'z''A'-'Z''_']['a'-'z''A'-'Z''_''0'-'9']* as t { STRING( t ) }
