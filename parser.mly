@@ -21,15 +21,22 @@ open ParseTree
 %type <int> main
 %%
 main:
-   expr EOL                { $1 }
+   rawvalue EOL                { $1 }
 ;
 
-expr:
+rawvalue:
    INT                     { $1 }
- | LPAREN expr RPAREN      { $2 }
- | expr PLUS expr          { $1 + $3 }
- | expr MINUS expr         { $1 - $3 }
- | expr TIMES expr         { $1 * $3 }
- | expr DIV expr           { $1 / $3 }
- | MINUS expr %prec UMINUS { - $2 }
+ | LPAREN rawvalue RPAREN      { $2 }
+ | rawvalue PLUS rawvalue          { $1 + $3 }
+ | rawvalue MINUS rawvalue         { $1 - $3 }
+ | rawvalue TIMES rawvalue         { $1 * $3 }
+ | rawvalue DIV rawvalue           { $1 / $3 }
+ | rawvalue MOD rawvalue           { $1 ?? $3}
+ | rawvalue EXP rawvalue           { $1 ** $3}
+ 
+ | MINUS rawvalue %prec UMINUS { - $2 }
+ | value 
 ;
+comparator:
+   
+
