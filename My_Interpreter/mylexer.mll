@@ -15,6 +15,9 @@ rule token = parse
     | '^'         { EXP }
     | '%'         { MOD } 
     
+    | "begin"     { BEGIN }
+    
+    
     | '='         { ASSIGN } 
     
     | '>'         { GREATER } 
