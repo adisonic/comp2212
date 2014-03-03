@@ -40,7 +40,7 @@ rule token = parse
     | "]]"        { CLOSESTREAM }
     
     | "if"        { IF }
-    | "then"      { THEN } 
+    | "then"      { THEN } (* use in if ... then ... else, but maybe not needed *)
     | "else"      { ELSE } 
     | "while"     { WHILE }
     | "else_if"   { ELSE_IF }

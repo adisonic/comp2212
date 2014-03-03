@@ -22,10 +22,13 @@ open ParseTree
 %type <int> main
 %%
 main:                            /* need to edit could be just a body program or inclue global variable */
-   rawvalue EOL                { $1 }
+                   { $1 }
 ;
-expr
 
+expr
+;
+
+/* like expression, evaluate to a rawvalue */
 rawvalue:
    INT                            { $1 }
  | LPAREN rawvalue RPAREN           { $2 }
@@ -38,28 +41,57 @@ rawvalue:
  
  | MINUS rawvalue %prec UMINUS { - $2 }
  | value 
+; 
+   
+body:
+   | cond_statement
+   | while_statement   
+   | sentence
 ;
 
-body:
- ;  
-   
-   
-condstatement:
-   IF result LCURLYB body RCURLYB 
-   /*| condstatement ELSE LCURLYB body RCURLYB
-   | condstatement ELSE_IF LCURLYB body RCURLYB */
+variable:
+   | STRING 
 
-comparator:
-   LPAREN rawvalue condition rawvalue RPAREN 
-   ;
-   
+sentence: /* is a statement form a complete instruction, could include a semicolon (?) */
+   | rawvalue SEMI_COLON
+   | variable ASSIGN rawvalue SEMI_COLON
+   | cond_statement
+   | while_statement
+   | 
+
+
+
+/* if ( value ) { body } 
+   if ( value ) { body } else { body } 
+   if ( value ) { body } else_if*/
+cond_statement: 
+   IF condition LCURLYB body RCURLYB 
+   | 
+   /*| condstatement ELSE LCURLYB body RCURLYB
+   | condstatement ELSE_IF LCURLYB body RCURLYB */ 
+
 condition:
-   GREATER
+   LPAREN rawvalue comparison_operator rawvalue RPAREN 
+   ;
+
+/* while ( value ) { body } */
+while_statement: /* loop */
+
+
+   
+comparison_operator: /* Equality and Relational Operators */
+    EQUAL 
+   | NOT_EQUAL
+   | GREATER
    | GREATER_OR_EQUAL
    | LESSER 
    | LESSER_OR_EQUAL 
-   | EQUAL 
-   | NOT_EQUAL
+;
+
+conditional_operator: 
+   AND
+   | OR
+;
    
    
 
