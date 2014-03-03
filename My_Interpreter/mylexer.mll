@@ -36,8 +36,8 @@ rule token = parse
     | ')'         { RPAREN }
     | '{'         { LCURLYB }
     | '}'         { RCURLYB }
-    | "stream[["     { OPENSTREAM }
-    | "]]"           { CLOSESTREAM }
+    | "stream[["  { OPENSTREAM }
+    | "]]"        { CLOSESTREAM }
     
     | "if"        { IF }
     | "then"      { THEN } 
@@ -46,7 +46,7 @@ rule token = parse
     | "else_if"   { ELSE_IF }
     | "true"      { TRUE }
     | "false"     { FALSE }
-    | ['a'-'z''A'-'Z''_']['a'-'z''A'-'Z''_''0'-'9']* as id { STRING( id ) }
+    | ['a'-'z''A'-'Z''_']['a'-'z''A'-'Z''_''0'-'9']* as id { STRING( id ) } (* identifier *)
     
     | eof      { raise Eof }
   
