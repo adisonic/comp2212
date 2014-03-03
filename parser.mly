@@ -2,7 +2,8 @@
 open ParseTree
 
 %token <int> INT
-%toke <string> STRING
+%token <string> STRING
+%token SEMI_COLON
 %token PLUS MINUS TIMES DIV EXP MOD  
 %token INCRE DECRE INCRE_EQUAL DECRE_EQUAL
 %token ASSIGN
@@ -23,6 +24,7 @@ open ParseTree
 main:
    rawvalue EOL                { $1 }
 ;
+expr
 
 rawvalue:
    INT                     { $1 }
@@ -37,6 +39,27 @@ rawvalue:
  | MINUS rawvalue %prec UMINUS { - $2 }
  | value 
 ;
+
+body:
+   
+   
+   
+condstatement:
+   IF comparator LCURLYB body RCURLYB 
+   | condstatement ELSE LCURLYB body RCURLYB
+   | condstatement ELSE_IF LCURLYB body RCURLYB
+
 comparator:
+   LPAREN rawvalue condition rawvalue RPAREN 
+   ;
+   
+condition:
+   GREATER
+   | GREATER_OR_EQUAL
+   | LESSER 
+   | LESSER_OR_EQUAL 
+   | EQUAL 
+   | NOT_EQUAL
+   
    
 
