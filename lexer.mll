@@ -46,7 +46,7 @@ rule token = parse
     | "else_if"   { ELSE_IF }
     | "true"      { TRUE }
     | "false"     { FALSE }
-    | ['a'-'z''A'-'Z''_']['a'-'z''A'-'Z''_''0'-'9']* as t { STRING( t ) }
+    | ['a'-'z''A'-'Z''_']['a'-'z''A'-'Z''_''0'-'9']* as id { STRING( id ) }
     
     | eof      { raise Eof }
   
