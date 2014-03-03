@@ -21,14 +21,14 @@ open ParseTree
 %start main             /* the entry point */
 %type <int> main
 %%
-main:
+main:                            /* need to edit could be just a body program or inclue global variable */
    rawvalue EOL                { $1 }
 ;
 expr
 
 rawvalue:
-   INT                     { $1 }
- | LPAREN rawvalue RPAREN      { $2 }
+   INT                            { $1 }
+ | LPAREN rawvalue RPAREN           { $2 }
  | rawvalue PLUS rawvalue          { $1 + $3 }
  | rawvalue MINUS rawvalue         { $1 - $3 }
  | rawvalue TIMES rawvalue         { $1 * $3 }
@@ -41,13 +41,13 @@ rawvalue:
 ;
 
 body:
-   
+ ;  
    
    
 condstatement:
-   IF comparator LCURLYB body RCURLYB 
-   | condstatement ELSE LCURLYB body RCURLYB
-   | condstatement ELSE_IF LCURLYB body RCURLYB
+   IF result LCURLYB body RCURLYB 
+   /*| condstatement ELSE LCURLYB body RCURLYB
+   | condstatement ELSE_IF LCURLYB body RCURLYB */
 
 comparator:
    LPAREN rawvalue condition rawvalue RPAREN 
