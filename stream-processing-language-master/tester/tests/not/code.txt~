@@ -1,4 +1,0 @@
-
-process {
-    inject( stream[0] );
-}

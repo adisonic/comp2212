@@ -1,9 +1,0 @@
-
-process {
-    i = 5;
-    while(i>0) {
-        inject(stream[0]);
-        i--;
-    }
-}
-
