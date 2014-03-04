@@ -47,9 +47,10 @@ body:
      | sentence body                          { Node2("bodyExtend", $1, $2 }
 ;
 
+/* binding: variable and its value */
 variable:
    | STRING                                   { Variable($1)}
-
+   | OPENSTREAM rawvalue CLOSESTREAM          { Node1("streamValue", $2) }
 
 /* if ( value ) { body } 
    if ( value ) { body } else { body } 
@@ -75,8 +76,7 @@ sentence: /* is a statement form a complete instruction, could include a semicol
    | variable DECRE_EQUAL rawvalue SEMI_COLON     { Node2("-=", $1, $3) } /* may need to add *= and /= */
    | cond_statement                               { $1 }
    | while_statement                              { $1 }  
-   
-   
+;
    
    
 /* like expression, evaluate to a rawvalue, no semi-colon */
