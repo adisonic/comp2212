@@ -48,7 +48,7 @@ body:
 ;
 
 variable:
-   | STRING 
+   | STRING                                   { Variable($1)}
 
 
 /* if ( value ) { body } 
