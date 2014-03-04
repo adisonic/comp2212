@@ -1,4 +1,4 @@
-Check how comments worked in parser, lexer and main! Including /* File parser.mly */ !
+For parser comment-style of C : /* .... */ and for everyting else, it is : (* .... *)
 
 Single line comments
 
