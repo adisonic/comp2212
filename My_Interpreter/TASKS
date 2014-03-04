@@ -1,5 +1,8 @@
+Check how comments worked in parser, lexer and main! Including /* File parser.mly */ !
+
 Single line comments
 
 elseif functionality
 
 Add cond functionality to make it easier for multiple conditions
+
