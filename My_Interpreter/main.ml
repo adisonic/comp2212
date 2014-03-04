@@ -2,6 +2,7 @@
 let rec recursivePath inputtree =
   
   let processBody body = 
+    (recursivePath body)
     
   let processIf condition body = 
     if ((recursivePath condition) == true)
@@ -19,6 +20,8 @@ let rec recursivePath inputtree =
     while ((recursivePath condition)) 
       do (recursivePath body)
     done
+    
+    
 
 match inputtree with
     LeafBool(x1)                    -> x1
