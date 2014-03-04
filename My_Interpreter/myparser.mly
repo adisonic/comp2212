@@ -38,11 +38,47 @@ main:                            /* need to edit could be just a body program or
 ;
 
 globalVars: 
- | variable ASSIGN rawvalue SEMICOLON              { Node2("AssignGlobalVars", $1, $3)}
- | variable ASSIGN rawvalue SEMICOLON globalVars   { Node2("MultipleGlobalVars", Node2("AssignGlobalVars", $1, $3), $5}
+ | variable ASSIGN rawvalue SEMICOLON              { Node2("globalAssign", $1, $3)}
+ | variable ASSIGN rawvalue SEMICOLON globalVars   { Node2("globalAssignExtending", Node2("globalAssign", $1, $3), $5}
 ;
   
+body:   
+     sentence                                 { Node1("bodyEnding", $1) } 
+     | sentence body                          { Node2("bodyExtend", $1, $2 }
+;
 
+variable:
+   | STRING 
+
+
+/* if ( value ) { body } 
+   if ( value ) { body } else { body } 
+   if ( value ) { body } else_if */
+   
+cond_statement: 
+   IF LPAREN rawvalue RPAREN LCURLYB body RCURLYB                                  { Node2("if", $3, $6) }
+   | IF LPAREN rawvalue RPAREN LCURLYB body RCURLYB ELSE LCURLYB body RCURLYB      { Node3("if", $3, $6, $10) }
+   /* May need to add elseif */
+
+                    
+
+/* while ( value ) { body } */
+while_statement: /* loop */
+   | WHILE LPAREN rawvalue RPAREN LCURLYB body RCURLYB          { Node1 ("while", $3, $6) }                       
+;
+   
+   
+sentence: /* is a statement form a complete instruction, could include a semicolon (?) */
+   | rawvalue SEMI_COLON            /*Do we need? */   { $1 }              
+   | variable ASSIGN rawvalue SEMI_COLON          { Node2("assign", $1, $3) }  
+   | variable INCRE_EQUAL rawvalue SEMI_COLON     { Node2("+=", $1, $3) }
+   | variable DECRE_EQUAL rawvalue SEMI_COLON     { Node2("-=", $1, $3) } /* may need to add *= and /= */
+   | cond_statement                               { $1 }
+   | while_statement                              { $1 }  
+   
+   
+   
+   
 /* like expression, evaluate to a rawvalue, no semi-colon */
 /*Include: arithmetic operations
            comparision operations: something that could be avaluated to 1 or 0 (boolean) */
@@ -50,71 +86,30 @@ rawvalue:
    INT                                        { Leaf($1) }
  | LPAREN rawvalue RPAREN                     { $2 }
  
- | variable INCRE /* ++ */                    { Node1("Increment", $1) }  
- | variable DECRE /* -- */                    { Node1("Decrement", $1) }
+ | variable INCRE /* ++ */                    { Node1("++", $1) }  
+ | variable DECRE /* -- */                    { Node1("--", $1) }
  
- | rawvalue PLUS rawvalue                     { Node2("Plus", $1, $3) }
- | rawvalue MINUS rawvalue                    { Node2("Minus", $1, $3) }
- | rawvalue TIMES rawvalue                    { Node2("Times", $1, $3) }        
- | rawvalue DIV rawvalue                      { Node2("Divide", $1, $3) }         
- | rawvalue MOD rawvalue                      { Node2("Modulus", $1, $3) }
- | rawvalue EXP rawvalue                      { Node2("Exponential", $1, $3) }
- | MINUS rawvalue %prec UMINUS
+ | rawvalue PLUS rawvalue                     { Node2("+", $1, $3) }
+ | rawvalue MINUS rawvalue                    { Node2("-", $1, $3) }
+ | rawvalue TIMES rawvalue                    { Node2("*", $1, $3) }        
+ | rawvalue DIV rawvalue                      { Node2("/", $1, $3) }         
+ | rawvalue MOD rawvalue                      { Node2("%", $1, $3) }
+ | rawvalue EXP rawvalue                      { Node2("^", $1, $3) }
+ /*| MINUS rawvalue %prec UMINUS                { - $2 } */
   
- | rawvalue AND rawvalue                      { 
- | rawvalue OR rawvalue 
- | rawvalue EQUAL rawvalue 
- | rawvalue NOT_EQUAL rawvalue
- | rawvalue GREATER rawvalue
- | rawvalue GREATER_OR_EQUAL rawvalue
- | rawvalue LESSER rawvalue
- | rawvalue LESSER_OR_EQUAL rawvalue
- | TRUE                                       /* Think we hould represent it as a leaf string */
- | FALSE 
- | variable
+ | rawvalue AND rawvalue                      { Node2("&&", $1, $3) }
+ | rawvalue OR rawvalue                       { Node2("||", $1, $3) }
+ | NOT rawvalue                               { Node1("!", $1 }
+ | rawvalue EQUAL rawvalue                    { Node2("=", $1, $3) }
+ | rawvalue NOT_EQUAL rawvalue                { Node2("!=", $1, $3) }
+ | rawvalue GREATER rawvalue                  { Node2(">", $1, $3) }
+ | rawvalue GREATER_OR_EQUAL rawvalue         { Node2(">=", $1, $3) }
+ | rawvalue LESSER rawvalue                   { Node2("<", $1, $3) }
+ | rawvalue LESSER_OR_EQUAL rawvalue          { Node2("<=", $1, $3) }
+ | TRUE                                       { LeafBool (true) }         /* Think we hould represent it as a leaf string */
+ | FALSE                                      { LeafBool (false) }
 
-; 
-   
-body:
-     sentence                   { Node
-     | sentence body
-;
-
-variable:
-   | STRING 
-
-sentence: /* is a statement form a complete instruction, could include a semicolon (?) */
-   | rawvalue SEMI_COLON            /*Do we need? */   { $1 }              
-   | variable ASSIGN rawvalue SEMI_COLON          { Node2("Assign", $1, $3) }  
-   | variable INCRE_EQUAL rawvalue SEMI_COLON     { Node2("Decrement", $1, $3) }
-   | variable DECRE_EQUAL rawvalue SEMI_COLON     { Node2("Decrement", $1, $3) }
-   | cond_statement                               { $1 }
-   | while_statement                              { $1 }  
-   
-
-/* if ( value ) { body } 
-   if ( value ) { body } else { body } 
-   if ( value ) { body } else_if */
-   
-cond_statement: 
-   IF condition LCURLYB body RCURLYB                                  { Node2("if", $2, $4) }
-   | IF condition LCURLYB body RCURLYB ELSE LCURLYB body RCURLYB      { Node3("ifelse", $2, $4, $8) }
-   /* May need to add elseif */
-
- 
-condition:
-   LPAREN rawvalue RPAREN                       
-
-
-/* while ( value ) { body } */
-while_statement: /* loop */
-   | WHILE condition LCURLYB body RCURLYB 
-
-conditional_operator: 
-   AND
-   | OR
-;
-   
+;   
    
 
 
