@@ -24,10 +24,11 @@ open MyParseTree
 /*NEED TO ADD RELEVANT STUFF TO TYPE PARSETREE BELOW */
 %type <myParseTree.parseTree> main
 %type <myParseTree.parseTree> globalVars
-%type <myParseTree.parseTree>
-%type <myParseTree.parseTree>
-%type <myParseTree.parseTree>
-%type <myParseTree.parseTree>
+%type <myParseTree.parseTree> rawvalue
+%type <myParseTree.parseTree> cond_statement
+%type <myParseTree.parseTree> while_statement
+%type <myParseTree.parseTree> sentence
+/* May need to add more.. so revise if any errors
 %type <myParseTree.parseTree>
 %%
 
@@ -106,7 +107,7 @@ rawvalue:
  | rawvalue GREATER_OR_EQUAL rawvalue         { Node2(">=", $1, $3) }
  | rawvalue LESSER rawvalue                   { Node2("<", $1, $3) }
  | rawvalue LESSER_OR_EQUAL rawvalue          { Node2("<=", $1, $3) }
- | TRUE                                       { LeafBool (true) }         /* Think we hould represent it as a leaf string */
+ | TRUE                                       { LeafBool (true) }         
  | FALSE                                      { LeafBool (false) }
 
 ;   
