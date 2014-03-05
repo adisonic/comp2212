@@ -8,23 +8,37 @@ module MapOfVariables = map.make(String);;
 let GlobalVariables = ref MapOfVariables.empty;;
 
 (*The below variables are to store information on the stream*)
-let streamCount = ref 0;
+(*let streamCount = ref 0;
 let streamLength = ref 0;
+*)
+let inputStream = ref [];
+let outputStream = ref [];
 
-
-let rec recursivePath inputtree =
+let rec recursivePath inputTree =
+  
+  let processVariable argVName = 
+    try
+      (MapOfVariables.find argVName !GlobalVariables)
+      with Not_found -> print_string("Error: This variable does not exist"); exit 0;
+      
+  in
+  
+  let assignName argVName argVValue = 
+    GlobalVariables := MapOfVariables.add argVName (recursivePath argVValue) !GlobalVariables;  
+  in
   
   let processBody body = 
     (recursivePath body)
   in
   
-  let processBody extend bodyOne bodyTwo = 
+  let processBodyextend bodyOne bodyTwo = 
     (recursivePath bodyOne);
     (recursivePath bodyTwo);
     
   let processIf condition body = 
     if ((recursivePath condition) == true)
     then (recursivePath body)
+    else false
   in
   
   let processIfElse condition body elsebody = 
@@ -35,16 +49,21 @@ let rec recursivePath inputtree =
   in
   (* Could be faulty ?? *)
   let processWhile condition body = 
-    while ((recursivePath condition)) 
+    while ((recursivePath condition) == true) 
       do (recursivePath body)
-    done
+    done;
+    false
     
-    
+  in
+  let print arg =
+    outputStream := (recursivePath arg) :: !outputStream;
+    0
+    in
 
 match inputtree with
     LeafBool(argBool)                   -> argBool
-  | Leaf (arg1)                         -> arg1
-  | Variable (name)                     -> (AssignName name)
+  | Leaf (argInt)                         -> argInt
+  | Variable (name)                     -> (processVariable name)
   | Node1("streamValue", streamName)    -> (processStream streamName) 
   
     Node1("++", arg1)
@@ -60,8 +79,8 @@ match inputtree with
   | Node1("bodyEnding", arg1)         -> (recursivePath arg1)
   | Node2("bodyExtend", arg1, arg2)   -> (recursivePath arg1); (recursivePath arg2)
   
-  | Node2("globalAssign", arg1, arg2)
-  | Node2("globalAssignExtending", arg1, arg2)
+  | Node2("globalAssign", arg1, arg2)           -> (assignName arg1 arg2)
+  | Node2("globalAssignExtending", arg1, arg2)  -> (recursivePath arg1); (recursivePath arg2)
   
   | Node2("MainwithGlobalVars", arg1, arg2)   -> (recursivePath arg1); (recursivePath arg2)
   
@@ -79,3 +98,12 @@ match inputtree with
   | Node2("<=", arg1, arg2)             -> if ((recursivePath arg1) <= (recursivePath arg2)) then true else false
   |(* Node1("!", arg1)                  -> if ((recursivePath arg1) == true) then false else true  *)
   | 
+;;
+
+let inputProcessor =  
+  let StreamCount = ref (read_int()) in
+  
+  let StreamLength = ref (read_int()) in
+  
+  
+
