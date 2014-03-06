@@ -1,6 +1,6 @@
 /* File parser.mly */
 %{
-  open parseTree;;
+  open ParseTree;;
 %}
 
 %token <int> INT
@@ -23,12 +23,12 @@
 %left TIMES DIV         /* medium precedence */
 %nonassoc UMINUS        /* highest precedence */
 %start main             /* the entry point */
-%type <myParseTree.parseTree> main
-%type <myParseTree.parseTree> globalVars
-%type <myParseTree.parseTree> rawvalue
-%type <myParseTree.parseTree> cond_statement
-%type <myParseTree.parseTree> while_statement
-%type <myParseTree.parseTree> sentence
+%type <ParseTree.parseTree> main
+%type <ParseTree.parseTree> globalVars
+%type <ParseTree.parseTree> rawvalue
+%type <ParseTree.parseTree> cond_statement
+%type <ParseTree.parseTree> while_statement
+%type <ParseTree.parseTree> sentence
 %%
 /* May need to add more.. so revise if any errors */
 
@@ -39,8 +39,8 @@ main:
 ;
 
 globalVars: 
- | variable ASSIGN rawvalue SEMI_COLON              { Node2("globalAssign", $1, $3)}
- | variable ASSIGN rawvalue SEMI_COLON globalVars   { Node2("globalAssignExtending", Node2("globalAssign", $1, $3), $5)}  /*Check main to see if handled properly*/
+ | STRING ASSIGN rawvalue SEMI_COLON              { Node2("globalAssign", Variable($1), $3)}
+ | STRING ASSIGN rawvalue SEMI_COLON globalVars   { Node2("globalAssignExtending", Node2("globalAssign", Variable($1), $3), $5)}  /*Check main to see if handled properly*/
 ;
   
 body:   
@@ -67,7 +67,7 @@ cond_statement:
 
 /* while ( value ) { body } */
 while_statement: /* loop */
-   | WHILE LPAREN rawvalue RPAREN LCURLYB body RCURLYB          { Node1 ("while", $3, $6) }                       
+   | WHILE LPAREN rawvalue RPAREN LCURLYB body RCURLYB          { Node2 ("while", $3, $6) }                       
 ;
    
    
