@@ -1,23 +1,25 @@
-(*If recursive path doesnt have a function, it just returns the int of a value, if required!
-*)
 open mylexer;
 open myparser;
 open myparseTree;
 
+
 module MapOfVariables = Map.Make(String);;
 let globalVariables = ref MapOfVariables.empty;;
+
 
 (*The below variables are to store information on the stream*)
 let streamCount = ref 0;;
 let streamLength = ref 0;;
 
+
 let inputStream = ref [];;
 let outputStream = ref [];;
+
 
 let rec recursivePath inputTree =
   
   let processVariable argVName = 
-    try 
+    try
       (MapOfVariables.find argVName !globalVariables)
       with Not_found -> print_string("Error: This variable does not exist"); exit 0;
       
@@ -72,7 +74,8 @@ let rec recursivePath inputTree =
     0
     in
 
-match inputTree with
+
+match inputtree with
     LeafBool(argBool)                   -> argBool
   | Leaf (argInt)                         -> argInt
   | Variable (name)                     -> (processVariable name)
@@ -107,18 +110,27 @@ match inputTree with
   | Node2(">=", arg1, arg2)             -> if ((recursivePath arg1) >= (recursivePath arg2)) then true else false
   | Node2("<", arg1, arg2)              -> if ((recursivePath arg1) < (recursivePath arg2)) then true else false
   | Node2("<=", arg1, arg2)             -> if ((recursivePath arg1) <= (recursivePath arg2)) then true else false
-  (* Node1("!", arg1)                  -> if ((recursivePath arg1) == true) then false else true  *)
+  | Node1("!", arg1)                  -> if ((recursivePath arg1) == true) then false else true 
    
 ;;
 
-let inputGetter =  
-  let StreamCount = (read_int()) in
-  globalVariables
-  let StreamLength = (read_int()) in
-  
-  
+(* Store input in a map *)
+let storeInput = 
+    let count := (read_int());
+    globalVars := (VarMap.add("Count") count !globalVars);
+    let length := (read_int());
+    globalVars := (VarMap.add("Length") length !globalVars);
 
+    let bind label value 
+
+    while (!count != 0) do 
+        (* extract each line of int *)
+        let anIntList = (List.map int_of_string (Str.split (Str.regexp " ") (read_line ()))); 
+        (* store them in the globalVar map *)
+        globalVar := (VarMap.add "$" ^ )
 ;;
+
+
 
 let start =
     inputGetter;
