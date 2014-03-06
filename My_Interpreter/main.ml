@@ -24,6 +24,9 @@ let rec recursivePath inputTree =
   in
   
   let assignName argVName argVValue = 
+    if (argVName = "begin" or argVName = "openstream") 
+    then print_string("Error: Used a illegal variable name");
+    else
     GlobalVariables := MapOfVariables.add argVName (recursivePath argVValue) !GlobalVariables;  
   in
   
@@ -55,6 +58,15 @@ let rec recursivePath inputTree =
     false
     
   in
+  let processIncrement arg1 =
+    
+  in
+  
+  let processDecrement arg1 = 
+    
+    
+  in
+  
   let print arg =
     outputStream := (recursivePath arg) :: !outputStream;
     0
@@ -66,8 +78,8 @@ match inputtree with
   | Variable (name)                     -> (processVariable name)
   | Node1("streamValue", streamName)    -> (processStream streamName) 
   
-    Node1("++", arg1)
-  | Node1("--", arg1)
+    Node1("++", arg1)                   -> (processsIncrement arg1)
+  | Node1("--", arg1)                   -> (processDecrement arg1)
   |
   | Node2("+", arg1, arg2)              -> (recursivePath arg1) + (recursivePath arg2)
   | Node2("-", arg1, arg2)              -> (recursivePath arg1) - (recursivePath arg2)
@@ -114,12 +126,12 @@ let start =
     try
         let lexbuf = Lexing.from_channel (open_in Sys.argv.(1)) in
             while true do
-                let result = (myParser.main Lexer.token lexbuf) in
+                let result = (myParser.main MyLexer.token lexbuf) in
                         flush stdout;    
                         recursivePath result;
             done;
     with 
-        Lexer.Eof -> 
+        MyLexer.Eof -> 
             print_int (List.length !outputStream);
             print_string "\n";
             printList (List.rev !outputStream);
