@@ -28,9 +28,9 @@ open MyParseTree
 %type <myParseTree.parseTree> cond_statement
 %type <myParseTree.parseTree> while_statement
 %type <myParseTree.parseTree> sentence
-/* May need to add more.. so revise if any errors
-%type <myParseTree.parseTree>
-%%
+/* May need to add more.. so revise if any errors */
+
+
 
 
 main:                            /* need to edit could be just a body program or inclue global variable */
