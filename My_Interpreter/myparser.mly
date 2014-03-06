@@ -1,5 +1,7 @@
 /* File parser.mly */
-open MyParseTree
+%{
+  open MyParseTree;;
+%}
 
 %token <int> INT
 %token <string> STRING
@@ -71,7 +73,7 @@ while_statement: /* loop */
    
    
 sentence: /* is a statement form a complete instruction, could include a semicolon (?) */
-   | rawvalue SEMI_COLON            /*Do we need? */   { $1 }              
+   | rawvalue SEMI_COLON               { $1 }              
    | variable ASSIGN rawvalue SEMI_COLON          { Node2("assign", $1, $3) }  
    | variable INCRE_EQUAL rawvalue SEMI_COLON     { Node2("+=", $1, $3) }
    | variable DECRE_EQUAL rawvalue SEMI_COLON     { Node2("-=", $1, $3) } /* may need to add *= and /= */
