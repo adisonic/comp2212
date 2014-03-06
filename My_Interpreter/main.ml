@@ -4,21 +4,21 @@ open mylexer;
 open myparser;
 open myparseTree;
 
-module MapOfVariables = map.make(String);;
-let GlobalVariables = ref MapOfVariables.empty;;
+module MapOfVariables = Map.Make(String);;
+let globalVariables = ref MapOfVariables.empty;;
 
 (*The below variables are to store information on the stream*)
-let streamCount = ref 0;
-let streamLength = ref 0;
+let streamCount = ref 0;;
+let streamLength = ref 0;;
 
-let inputStream = ref [];
-let outputStream = ref [];
+let inputStream = ref [];;
+let outputStream = ref [];;
 
 let rec recursivePath inputTree =
   
   let processVariable argVName = 
     try
-      (MapOfVariables.find argVName !GlobalVariables)
+      (MapOfVariables.find argVName !globalVariables)
       with Not_found -> print_string("Error: This variable does not exist"); exit 0;
       
   in
@@ -27,7 +27,7 @@ let rec recursivePath inputTree =
     if (argVName = "begin" or argVName = "openstream") 
     then print_string("Error: Used a illegal variable name");
     else
-    GlobalVariables := MapOfVariables.add argVName (recursivePath argVValue) !GlobalVariables;  
+    globalVariables := MapOfVariables.add argVName (recursivePath argVValue) !globalVariables;  
   in
   
   let processBody body = 
