@@ -1,6 +1,6 @@
-open mylexer;
-open myparser;
-open myparseTree;
+open Lexer;;
+open Parser;;
+open ParseTree;;
 
 
 module MapOfVariables = Map.Make(String);;
@@ -61,11 +61,11 @@ let rec recursivePath inputTree =
     
   in
   let processIncrement arg1 =
-    
+    print_string("increment shit");
   in
   
   let processDecrement arg1 = 
-    
+    print_string("decrement shit");
     
   in
   
@@ -93,7 +93,7 @@ match inputtree with
   | Node1("bodyEnding", arg1)         -> (recursivePath arg1)
   | Node2("bodyExtend", arg1, arg2)   -> (recursivePath arg1); (recursivePath arg2)
   
-  | Node2("globalAssign", arg1, arg2)           -> (assignName arg1 arg2)
+  | Node2("globalAssign", Variable(arg1), arg2)           -> (assignName arg1 arg2)
   | Node2("globalAssignExtending", arg1, arg2)  -> (recursivePath arg1); (recursivePath arg2)
   
   | Node2("MainwithGlobalVars", arg1, arg2)   -> (recursivePath arg1); (recursivePath arg2)
