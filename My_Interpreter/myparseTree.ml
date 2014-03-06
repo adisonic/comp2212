@@ -1,5 +1,5 @@
 type parseTree = 
- | Leaf of (int) 
+  Leaf of (int) 
  | LeafBool of (bool)
  | Variable of (string)
  | Node1 of (string * parseTree)
