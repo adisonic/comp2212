@@ -8,5 +8,5 @@ type parseTree =
 	| Node2 of (string * parseTree * parseTree)
 	| Node3 of (string * parseTree * parseTree * parseTree)
 
-
+;;
 
