@@ -100,10 +100,27 @@ match inputtree with
   | 
 ;;
 
-let inputProcessor =  
-  let StreamCount = ref (read_int()) in
-  
-  let StreamLength = ref (read_int()) in
+let inputGetter =  
+  let StreamCount = (read_int()) in
+  globalVariables
+  let StreamLength = (read_int()) in
   
   
 
+;;
+
+let start =
+    inputGetter;
+    try
+        let lexbuf = Lexing.from_channel (open_in Sys.argv.(1)) in
+            while true do
+                let result = (myParser.main Lexer.token lexbuf) in
+                        flush stdout;    
+                        recursivePath result;
+            done;
+    with 
+        Lexer.Eof -> 
+            print_int (List.length !outputStream);
+            print_string "\n";
+            printList (List.rev !outputStream);
+            (exit 0)
