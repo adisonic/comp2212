@@ -1,4 +1,3 @@
-(*Parse tree will go in here*)
 
 type parseTree = 
 	| Leaf of (int) 
@@ -9,4 +8,3 @@ type parseTree =
 	| Node3 of (string * parseTree * parseTree * parseTree)
 
 ;;
-
