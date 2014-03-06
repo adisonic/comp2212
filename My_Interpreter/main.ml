@@ -78,9 +78,8 @@ match inputtree with
   | Variable (name)                     -> (processVariable name)
   | Node1("streamValue", streamName)    -> (processStream streamName) 
   
-    Node1("++", arg1)                   -> (processsIncrement arg1)
+  | Node1("++", arg1)                   -> (processsIncrement arg1)
   | Node1("--", arg1)                   -> (processDecrement arg1)
-  |
   | Node2("+", arg1, arg2)              -> (recursivePath arg1) + (recursivePath arg2)
   | Node2("-", arg1, arg2)              -> (recursivePath arg1) - (recursivePath arg2)
   | Node2("*", arg1, arg2)              -> (recursivePath arg1) * (recursivePath arg2)
@@ -108,8 +107,8 @@ match inputtree with
   | Node2(">=", arg1, arg2)             -> if ((recursivePath arg1) >= (recursivePath arg2)) then true else false
   | Node2("<", arg1, arg2)              -> if ((recursivePath arg1) < (recursivePath arg2)) then true else false
   | Node2("<=", arg1, arg2)             -> if ((recursivePath arg1) <= (recursivePath arg2)) then true else false
-  |(* Node1("!", arg1)                  -> if ((recursivePath arg1) == true) then false else true  *)
-  | 
+  (* Node1("!", arg1)                  -> if ((recursivePath arg1) == true) then false else true  *)
+   
 ;;
 
 let inputGetter =  
