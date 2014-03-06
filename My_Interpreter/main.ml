@@ -17,7 +17,7 @@ let outputStream = ref [];;
 let rec recursivePath inputTree =
   
   let processVariable argVName = 
-    try
+    try 
       (MapOfVariables.find argVName !globalVariables)
       with Not_found -> print_string("Error: This variable does not exist"); exit 0;
       
@@ -72,7 +72,7 @@ let rec recursivePath inputTree =
     0
     in
 
-match inputtree with
+match inputTree with
     LeafBool(argBool)                   -> argBool
   | Leaf (argInt)                         -> argInt
   | Variable (name)                     -> (processVariable name)
