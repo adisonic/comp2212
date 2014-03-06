@@ -13,43 +13,36 @@ rule token = parse
     | '*'         { TIMES }
     | '/'         { DIV }
     | '^'         { EXP }
-    | '%'         { MOD } 
-    
+    | '%'         { MOD } (* end of categ *)
     | "begin"     { BEGIN }
-    
-    
-    | '='         { ASSIGN } 
-    
+    | ";"         { SEMI_COLON }               
+    | '='         { ASSIGN } (* end of categ *)
     | '>'         { GREATER } 
     | ">="        { GREATER_OR_EQUAL } 
     | '<'         { LESSER }
-    | "<="        { LESSER_OR_EQUAL }
-    
+    | "<="        { LESSER_OR_EQUAL }(* end of categ *)
     | "++"        { INCRE }
     | "--"        { DECRE } 
     | "+="        { INCRE_EQUAL }
     | "-="        { DECRE_EQUAL }
-    
     | "=="        { EQUAL }
-    | "!="        { NOT_EQUAL } 
+    | "!="        { NOT_EQUAL } (* end of categ *)
     | '!'         { NOT }
     | "||"        { OR }
-    | "&&"        { AND }
+    | "&&"        { AND } (* end of categ *)
     | '('         { LPAREN }
     | ')'         { RPAREN }
     | '{'         { LCURLYB }
-    | '}'         { RCURLYB }
+    | '}'         { RCURLYB }  
     | "stream[["  { OPENSTREAM }
-    | "]]"        { CLOSESTREAM }
-    
+    | "]]"        { CLOSESTREAM }  (* end of categ *)
     | "if"        { IF }
     | "then"      { THEN } (* use in if ... then ... else, but maybe not needed *)
     | "else"      { ELSE } 
     | "while"     { WHILE }
     | "else_if"   { ELSE_IF }
     | "true"      { TRUE }
-    | "false"     { FALSE }
+    | "false"     { FALSE }  (* end of categ *)
     | ['a'-'z''A'-'Z''_']['a'-'z''A'-'Z''_''0'-'9']* as id { STRING( id ) } (* identifier *)
-    
     | eof      { raise Eof }
   
