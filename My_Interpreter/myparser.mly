@@ -1,11 +1,12 @@
 /* File parser.mly */
 %{
-  open MyParseTree;;
+  open parseTree;;
 %}
 
 %token <int> INT
 %token <string> STRING
 %token SEMI_COLON
+%token BEGIN
 %token PLUS MINUS TIMES DIV EXP MOD  
 %token INCRE DECRE INCRE_EQUAL DECRE_EQUAL
 %token ASSIGN
@@ -16,41 +17,39 @@
 %token OPENSTREAM CLOSESTREAM 
 %token IF THEN ELSE ELSE_IF
 %token TRUE FALSE
+%token WHILE
 %token EOL
 %left PLUS MINUS        /* lowest precedence */
 %left TIMES DIV         /* medium precedence */
 %nonassoc UMINUS        /* highest precedence */
 %start main             /* the entry point */
-
-
-/*NEED TO ADD RELEVANT STUFF TO TYPE PARSETREE BELOW */
 %type <myParseTree.parseTree> main
 %type <myParseTree.parseTree> globalVars
 %type <myParseTree.parseTree> rawvalue
 %type <myParseTree.parseTree> cond_statement
 %type <myParseTree.parseTree> while_statement
 %type <myParseTree.parseTree> sentence
+%%
 /* May need to add more.. so revise if any errors */
 
 
-
-
-main:                            /* need to edit could be just a body program or inclue global variable */
+main:                  
   BEGIN LCURLYB body RCURLYB                  { $3 }
-  | globalVars BEGIN LCURLYB body RCURLYB     { Node2("MainWithGlobalVars", $1, $3)}                
+  | globalVars BEGIN LCURLYB body RCURLYB     { Node2("MainWithGlobalVars", $1, $4)}                
 ;
 
 globalVars: 
- | variable ASSIGN rawvalue SEMICOLON              { Node2("globalAssign", $1, $3)}
- | variable ASSIGN rawvalue SEMICOLON globalVars   { Node2("globalAssignExtending", Node2("globalAssign", $1, $3), $5}
+ | variable ASSIGN rawvalue SEMI_COLON              { Node2("globalAssign", $1, $3)}
+ | variable ASSIGN rawvalue SEMI_COLON globalVars   { Node2("globalAssignExtending", Node2("globalAssign", $1, $3), $5)}  /*Check main to see if handled properly*/
 ;
   
 body:   
      sentence                                 { Node1("bodyEnding", $1) } 
-     | sentence body                          { Node2("bodyExtend", $1, $2 }
+     | sentence body                          { Node2("bodyExtend", $1, $2) }
 ;
 
 /* binding: variable and its value */
+
 variable:
    | STRING                                   { Variable($1)}
    | OPENSTREAM rawvalue CLOSESTREAM          { Node1("streamValue", $2) }
@@ -102,7 +101,7 @@ rawvalue:
   
  | rawvalue AND rawvalue                      { Node2("&&", $1, $3) }
  | rawvalue OR rawvalue                       { Node2("||", $1, $3) }
- | NOT rawvalue                               { Node1("!", $1 }
+ | NOT rawvalue                               { Node1("!", $2 )}
  | rawvalue EQUAL rawvalue                    { Node2("=", $1, $3) }
  | rawvalue NOT_EQUAL rawvalue                { Node2("!=", $1, $3) }
  | rawvalue GREATER rawvalue                  { Node2(">", $1, $3) }
@@ -113,6 +112,3 @@ rawvalue:
  | FALSE                                      { LeafBool (false) }
 
 ;   
-   
-
-
