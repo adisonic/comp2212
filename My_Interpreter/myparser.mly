@@ -108,7 +108,7 @@ rawvalue:
  | rawvalue GREATER_OR_EQUAL rawvalue         { Node2(">=", $1, $3) }
  | rawvalue LESSER rawvalue                   { Node2("<", $1, $3) }
  | rawvalue LESSER_OR_EQUAL rawvalue          { Node2("<=", $1, $3) }
- | TRUE                                       { LeafBool (true) }         
- | FALSE                                      { LeafBool (false) }
+ | TRUE                                       { Leaf (1) }         
+ | FALSE                                      { Leaf (0) }
 
 ;   
