@@ -41,23 +41,23 @@ let rec recursivePath inputTree =
     (recursivePath bodyTwo);
     
   let processIf condition body = 
-    if ((recursivePath condition) == true)
+    if ((recursivePath condition) == 1)
     then (recursivePath body)
-    else false
+    else 0
   in
   
   let processIfElse condition body elsebody = 
-    if ((recursivePath condition) == true)
+    if ((recursivePath condition) == 1)
     then (recursivePath body) 
     else (recursivePath elsebody) 
   
   in
   (* Could be faulty ?? *)
   let processWhile condition body = 
-    while ((recursivePath condition) == true) 
+    while ((recursivePath condition) == 1) 
       do (recursivePath body)
     done;
-    false
+    0
     
   in
   let processIncrement arg1 =
@@ -102,15 +102,15 @@ match inputtree with
   | Node3("if", arg1, arg2, arg3)         -> (processIfElse arg1 arg2 arg3)
   | Node1("while", arg1, arg2)          -> (processWhile arg1 arg2)
   
-  | Node2("&&", arg1, arg2)             -> if (((recursivePath arg1) == true) && ((recursivePath arg2) == true )) then true else false
-  | Node2("||", arg1, arg2)             -> if (((recursivePath arg1) == true) || ((recursivePath arg2) == true )) then true else false
-  | Node2("==", arg1, arg2)             -> if ((recursivePath arg1) == (recursivePath arg2)) then true else false
-  | Node2("!=", arg1, arg2)             -> if ((recursivePath arg1) != (recursivePath arg2)) then true else false
-  | Node2(">", arg1, arg2)              -> if ((recursivePath arg1) > (recursivePath arg2)) then true else false
-  | Node2(">=", arg1, arg2)             -> if ((recursivePath arg1) >= (recursivePath arg2)) then true else false
-  | Node2("<", arg1, arg2)              -> if ((recursivePath arg1) < (recursivePath arg2)) then true else false
-  | Node2("<=", arg1, arg2)             -> if ((recursivePath arg1) <= (recursivePath arg2)) then true else false
-  | Node1("!", arg1)                  -> if ((recursivePath arg1) == true) then false else true 
+  | Node2("&&", arg1, arg2)             -> if (((recursivePath arg1) == 1) && ((recursivePath arg2) == 1 )) then 1 else 0
+  | Node2("||", arg1, arg2)             -> if (((recursivePath arg1) == 1) || ((recursivePath arg2) == 1 )) then 1 else 0
+  | Node2("==", arg1, arg2)             -> if ((recursivePath arg1) == (recursivePath arg2)) then 1 else 0
+  | Node2("!=", arg1, arg2)             -> if ((recursivePath arg1) != (recursivePath arg2)) then 1 else 0
+  | Node2(">", arg1, arg2)              -> if ((recursivePath arg1) > (recursivePath arg2)) then 1 else 0
+  | Node2(">=", arg1, arg2)             -> if ((recursivePath arg1) >= (recursivePath arg2)) then 1 else 0
+  | Node2("<", arg1, arg2)              -> if ((recursivePath arg1) < (recursivePath arg2)) then 1 else 0
+  | Node2("<=", arg1, arg2)             -> if ((recursivePath arg1) <= (recursivePath arg2)) then 1 else 0
+  | Node1("!", arg1)                  -> if ((recursivePath arg1) == 1) then 0 else 1 
    
 ;;
 
