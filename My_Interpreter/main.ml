@@ -8,9 +8,9 @@ module MapOfVariables = map.make(String);;
 let GlobalVariables = ref MapOfVariables.empty;;
 
 (*The below variables are to store information on the stream*)
-(*let streamCount = ref 0;
+let streamCount = ref 0;
 let streamLength = ref 0;
-*)
+
 let inputStream = ref [];
 let outputStream = ref [];
 
