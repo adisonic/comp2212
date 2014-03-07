@@ -5,7 +5,7 @@ open ParseTree;;
 
 module MapOfVariables = Map.Make(String);;
 let globalVariables = ref MapOfVariables.empty;;
-
+let localVariables = ref MapOfVariables.empty
 
 (*The below variables are to store information on the stream*)
 let streamCount = ref 0;;
@@ -18,30 +18,16 @@ let outputStream = ref [];;
 
 let rec recursivePath inputTree =
   
-  let processVariable argVName = 
-    try
-      (MapOfVariables.find argVName !globalVariables)
-      with Not_found -> print_string("Error: This variable does not exist"); exit 0;
-      
-  in
-  
-  let assignName argVName argVValue = 
-    if (argVName = "begin" or argVName = "openstream") 
-    then print_string("Error: Used a illegal variable name");
-    else
-    globalVariables := MapOfVariables.add argVName (recursivePath argVValue) !globalVariables;  
-  in
-  
   let processBody body = 
     (recursivePath body)
   in
   
   let processBodyextend bodyOne bodyTwo = 
-    (recursivePath bodyOne);
-    (recursivePath bodyTwo);
-    
+    (recursivePath bodyOne); (recursivePath bodyTwo)
+  in
+  
   let processIf condition body = 
-    if ((recursivePath condition) == 1)
+    if ((recursivePath condition) == 1) (* or could be =!0 *)
     then (recursivePath body)
     else 0
   in
@@ -50,23 +36,51 @@ let rec recursivePath inputTree =
     if ((recursivePath condition) == 1)
     then (recursivePath body) 
     else (recursivePath elsebody) 
-  
   in
+  
   (* Could be faulty ?? *)
   let processWhile condition body = 
     while ((recursivePath condition) == 1) 
       do (recursivePath body)
     done;
     0
-    
   in
+  
+  (* Very important, need to check *)
+  let processGlobalAssign argName argValue = 
+    if (argVName = "begin" or argVName = "openstream") 
+    then print_string("Error: Used a illegal variable name");
+    else
+    globalVariables := MapOfVariables.add argVName (recursivePath argVValue) !globalVariables;  
+  in
+    
+  
+  
+  (* Seem look for a variable's name and return its associated value *)
+  let processVariable name = 
+    try
+      (MapOfVariables.find name !globalVariables)
+      with Not_found -> print_string("Error: This variable does not exist"); exit 0;
+  in
+  
+  (* importtant function used incre/incre_and_assign, decree/decree_and_assing...   *)  
+  (* Assign value to a variable name; value could be a tree, that needed to be evaluated!! *)
+  let processAssign name value = 
+    if ((name = "COUNT") || (name "LENGTH")) then 
+        (Printf.fprintf stderr "The variable '%s' is predefined in the program and cannot be used" name);
+    else 
+      (* If it's a global variable then save it here  *)
+      (VarMap.find name !globalVariables);
+      globalVariables := (MapOfVariables.add name (recursivePath value) !globalVariables);
+      0
+  in
+      
   let processIncrement arg1 =
     print_string("increment shit");
   in
   
   let processDecrement arg1 = 
     print_string("decrement shit");
-    
   in
   
   let print arg =
@@ -75,14 +89,30 @@ let rec recursivePath inputTree =
     in
 
 
-match inputtree with
-    LeafBool(argBool)                   -> argBool
-  | Leaf (argInt)                         -> argInt
-  | Variable (name)                     -> (processVariable name)
+match inputTree with
+  | Leaf(argInt)                         -> argInt (* ok *)
+  | Variable(name)                     -> (processVariable name) 
   | Node1("streamValue", streamName)    -> (processStream streamName) 
   
+  | Node2("MainwithGlobalVars", arg1, arg2)   -> (recursivePath arg1); (recursivePath arg2)
+  | Node2("assign", Variable(name), Leaf(value)) (* normal assignment *)
+                                        -> (processAssign)
+  
+  (* done *)
+  | Node1("bodyEnding", arg1)         -> (processBody arg1) (* ok *)
+  | Node2("bodyExtend", arg1, arg2)   -> (processBodyextend arg1 arg2) (* ok *)
+  
+  | Node2("globalAssign", arg1, arg2)           -> (processGlobalAssign arg1 arg2) (* Important, Need to check *)
+  | Node2("globalAssignExtending", arg1, arg2)  -> (recursivePath arg1); (recursivePath arg2)
+  
+  
+  
+  | Node2("if", arg1, arg2)             -> (processIf arg1 arg2)
+  | Node3("if", arg1, arg2, arg3)         -> (processIfElse arg1 arg2 arg3)
+  | Node1("while", arg1, arg2)          -> (processWhile arg1 arg2)
+  
   | Node1("++", arg1)                   -> (processsIncrement arg1)
-  | Node1("--", arg1)                   -> (processDecrement arg1)
+  | Node1("--", arg1)                   -> (processDecrement arg1) (* or call processsIncrement with -1 *)
   | Node2("+", arg1, arg2)              -> (recursivePath arg1) + (recursivePath arg2)
   | Node2("-", arg1, arg2)              -> (recursivePath arg1) - (recursivePath arg2)
   | Node2("*", arg1, arg2)              -> (recursivePath arg1) * (recursivePath arg2)
@@ -90,20 +120,8 @@ match inputtree with
   | Node2("%", arg1, arg2)              -> (recursivePath arg1) mod (recursivePath arg2)
   | Node2("^", arg1, arg2)              -> (recursivePath arg1) ** (recursivePath arg2)
   
-  | Node1("bodyEnding", arg1)         -> (recursivePath arg1)
-  | Node2("bodyExtend", arg1, arg2)   -> (recursivePath arg1); (recursivePath arg2)
-  
-  | Node2("globalAssign", Variable(arg1), arg2)           -> (assignName arg1 arg2)
-  | Node2("globalAssignExtending", arg1, arg2)  -> (recursivePath arg1); (recursivePath arg2)
-  
-  | Node2("MainwithGlobalVars", arg1, arg2)   -> (recursivePath arg1); (recursivePath arg2)
-  
-  | Node2("if", arg1, arg2)             -> (processIf arg1 arg2)
-  | Node3("if", arg1, arg2, arg3)         -> (processIfElse arg1 arg2 arg3)
-  | Node1("while", arg1, arg2)          -> (processWhile arg1 arg2)
-  
-  | Node2("&&", arg1, arg2)             -> if (((recursivePath arg1) == 1) && ((recursivePath arg2) == 1 )) then 1 else 0
-  | Node2("||", arg1, arg2)             -> if (((recursivePath arg1) == 1) || ((recursivePath arg2) == 1 )) then 1 else 0
+  | Node2("&&", arg1, arg2)             -> if (((recursivePath arg1) != 0) && ((recursivePath arg2) != 0 )) then 1 else 0
+  | Node2("||", arg1, arg2)             -> if (((recursivePath arg1) != 0) || ((recursivePath arg2) != 0 )) then 1 else 0
   | Node2("==", arg1, arg2)             -> if ((recursivePath arg1) == (recursivePath arg2)) then 1 else 0
   | Node2("!=", arg1, arg2)             -> if ((recursivePath arg1) != (recursivePath arg2)) then 1 else 0
   | Node2(">", arg1, arg2)              -> if ((recursivePath arg1) > (recursivePath arg2)) then 1 else 0
