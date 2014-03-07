@@ -5,7 +5,8 @@ main:
 
 globalVars:
  | STRING ASSIGN rawvalue SEMI_COLON { Node2("globalAssign", Variable($1), $3)} (* done *)
- | STRING ASSIGN rawvalue SEMI_COLON globalVars { Node2("globalAssignExtending", Node2("globalAssign", $1, $3), $5)} /*Check main to see if handled properly*/
+ | STRING ASSIGN rawvalue SEMI_COLON globalVars { Node2("globalAssignExtending", Node2("globalAssign", $1, $3), $5)} 
+                                                /*Check main to see if handled properly*/
 ;
   
 body:
