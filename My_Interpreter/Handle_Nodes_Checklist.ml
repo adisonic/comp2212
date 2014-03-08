@@ -6,7 +6,7 @@ main:
 globalVars:
  | STRING ASSIGN rawvalue SEMI_COLON { Node2("globalAssign", Variable($1), $3)} (* done *)
  | STRING ASSIGN rawvalue SEMI_COLON globalVars { Node2("globalAssignExtending", Node2("globalAssign", $1, $3), $5)} 
-                                                /*Check main to see if handled properly*/
+                                                (*Check main to see if handled properly*)
 ;
   
 body:
@@ -39,11 +39,11 @@ while_statement: /* loop */
    
 sentence: /* is a statement form a complete instruction, could include a semicolon (?) */
    | rawvalue SEMI_COLON { $1 }
-   | variable ASSIGN rawvalue SEMI_COLON { Node2("assign", $1, $3) } (* Not included yet *)
-   | variable INCRE_EQUAL rawvalue SEMI_COLON { Node2("+=", $1, $3) } (* Not included yet *)
-   | variable DECRE_EQUAL rawvalue SEMI_COLON { Node2("-=", $1, $3) } (* Not included yet *) /* may need to add *= and /= */
-   | cond_statement { $1 }
-   | while_statement { $1 }
+   | variable ASSIGN rawvalue SEMI_COLON { Node2("assign", $1, $3) } (* done *)
+   | variable INCRE_EQUAL rawvalue SEMI_COLON { Node2("+=", $1, $3) } (* done *)
+   | variable DECRE_EQUAL rawvalue SEMI_COLON { Node2("-=", $1, $3) } (* done *) /* may need to add *= and /= */
+   | cond_statement { $1 } (* done *)
+   | while_statement { $1 } (* done *)
 ;
    
    
@@ -63,12 +63,12 @@ rawvalue:
  | rawvalue DIV rawvalue { Node2("/", $1, $3) } (* done *)
  | rawvalue MOD rawvalue { Node2("%", $1, $3) } (* done *)
  | rawvalue EXP rawvalue { Node2("^", $1, $3) } (* done *)
- /*| MINUS rawvalue %prec UMINUS { - $2 } */
+ | MINUS rawvalue %prec UMINUS { Node1("-", $2) }         (* done *)
   
  | rawvalue AND rawvalue { Node2("&&", $1, $3) } (* done *)
  | rawvalue OR rawvalue { Node2("||", $1, $3) } (* done *)
  | NOT rawvalue { Node1("!", $2 )} (* done *) (* done *)
- | rawvalue EQUAL rawvalue { Node2("==", $1, $3) } 
+ | rawvalue EQUAL rawvalue { Node2("==", $1, $3) } (* done *)
  | rawvalue NOT_EQUAL rawvalue { Node2("!=", $1, $3) } (* done *)
  | rawvalue GREATER rawvalue { Node2(">", $1, $3) } (* done *) 
  | rawvalue GREATER_OR_EQUAL rawvalue { Node2(">=", $1, $3) } (* done *)

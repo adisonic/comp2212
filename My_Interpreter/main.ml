@@ -5,7 +5,7 @@ open ParseTree;;
 
 module MapOfVariables = Map.Make(String);;
 let globalVariables = ref MapOfVariables.empty;;
-let localVariables = ref MapOfVariables.empty
+let localVariables = ref MapOfVariables.empty (* We may not need, but I'll just put it here, we can just remove later *)
 
 (*The below variables are to store information on the stream*)
 let streamCount = ref 0;;
@@ -48,13 +48,8 @@ let rec recursivePath inputTree =
   
   (* Very important, need to check *)
   let processGlobalAssign argName argValue = 
-    if (argVName = "begin" or argVName = "openstream") 
-    then print_string("Error: Used a illegal variable name");
-    else
     globalVariables := MapOfVariables.add argVName (recursivePath argVValue) !globalVariables;  
   in
-    
-  
   
   (* Seem look for a variable's name and return its associated value *)
   let processVariable name = 
@@ -74,13 +69,11 @@ let rec recursivePath inputTree =
       globalVariables := (MapOfVariables.add name (recursivePath value) !globalVariables);
       0
   in
-      
-  let processIncrement arg1 =
-    print_string("increment shit");
-  in
   
-  let processDecrement arg1 = 
-    print_string("decrement shit");
+  (* Look for and incre the value associated with variable name, then assign new value to the name *)
+  let processIncrement name incre =
+    let newValue = (processVariable name) + incre in
+       (processAssign name (Leaf(newValue))); newValue
   in
   
   let print arg =
@@ -88,37 +81,37 @@ let rec recursivePath inputTree =
     0
     in
 
-
 match inputTree with
-  | Leaf(argInt)                         -> argInt (* ok *)
-  | Variable(name)                     -> (processVariable name) 
+  | Leaf(argInt)                        -> argInt (* ok *)
+  | Variable(name)                      -> (processVariable name) 
   | Node1("streamValue", streamName)    -> (processStream streamName) 
   
   | Node2("MainwithGlobalVars", arg1, arg2)   -> (recursivePath arg1); (recursivePath arg2)
-  | Node2("assign", Variable(name), Leaf(value)) (* normal assignment *)
-                                        -> (processAssign)
-  
+  | Node2("assign", Variable(name), Leaf(value)) -> (processAssign) (* normal assignment *)
+                                        
   (* done *)
-  | Node1("bodyEnding", arg1)         -> (processBody arg1) (* ok *)
-  | Node2("bodyExtend", arg1, arg2)   -> (processBodyextend arg1 arg2) (* ok *)
+  | Node1("bodyEnding", arg1)           -> (processBody arg1) (* ok *)
+  | Node2("bodyExtend", arg1, arg2)     -> (processBodyextend arg1 arg2) (* ok *)
   
-  | Node2("globalAssign", arg1, arg2)           -> (processGlobalAssign arg1 arg2) (* Important, Need to check *)
-  | Node2("globalAssignExtending", arg1, arg2)  -> (recursivePath arg1); (recursivePath arg2)
-  
-  
-  
+  | Node2("globalAssign", Variable(arg1), Leaf(arg2))     -> (processGlobalAssign arg1 arg2) (* Important, Need to check *)
+  | Node2("globalAssignExtending", arg1, arg2)            -> (recursivePath arg1); (recursivePath arg2)
+   
   | Node2("if", arg1, arg2)             -> (processIf arg1 arg2)
-  | Node3("if", arg1, arg2, arg3)         -> (processIfElse arg1 arg2 arg3)
+  | Node3("if", arg1, arg2, arg3)       -> (processIfElse arg1 arg2 arg3)
   | Node1("while", arg1, arg2)          -> (processWhile arg1 arg2)
   
-  | Node1("++", arg1)                   -> (processsIncrement arg1)
-  | Node1("--", arg1)                   -> (processDecrement arg1) (* or call processsIncrement with -1 *)
+  | Node1("++", arg1)                   -> (processIncrement arg1 1)
+  | Node1("--", arg1)                   -> (processIncrement arg1 (-1)) (* or call processsIncrement with -1 *)
+  | Node2("+=", Variable(arg1), arg2)   -> (processIncrement arg1 (recursivePath arg2))
+  | Node2("-=", Variable(arg1), arg2)   -> (processIncrement arg1 (-(recursivePath arg2)))
+
+  | Node1("-", arg1)                    -> -(recursivePath arg1) (* This one is negation of some value *)
   | Node2("+", arg1, arg2)              -> (recursivePath arg1) + (recursivePath arg2)
-  | Node2("-", arg1, arg2)              -> (recursivePath arg1) - (recursivePath arg2)
+  | Node2("-", arg1, arg2)              -> (recursivePath arg1) - (recursivePath arg2) (* This one is subtraction *)
   | Node2("*", arg1, arg2)              -> (recursivePath arg1) * (recursivePath arg2)
   | Node2("/", arg1, arg2)              -> (recursivePath arg1) / (recursivePath arg2)
   | Node2("%", arg1, arg2)              -> (recursivePath arg1) mod (recursivePath arg2)
-  | Node2("^", arg1, arg2)              -> (recursivePath arg1) ** (recursivePath arg2)
+  | Node2("^", arg1, arg2)              -> (recursivePath arg1) ** (recursivePath arg2) (* The ** apply to float *)
   
   | Node2("&&", arg1, arg2)             -> if (((recursivePath arg1) != 0) && ((recursivePath arg2) != 0 )) then 1 else 0
   | Node2("||", arg1, arg2)             -> if (((recursivePath arg1) != 0) || ((recursivePath arg2) != 0 )) then 1 else 0
@@ -128,7 +121,7 @@ match inputTree with
   | Node2(">=", arg1, arg2)             -> if ((recursivePath arg1) >= (recursivePath arg2)) then 1 else 0
   | Node2("<", arg1, arg2)              -> if ((recursivePath arg1) < (recursivePath arg2)) then 1 else 0
   | Node2("<=", arg1, arg2)             -> if ((recursivePath arg1) <= (recursivePath arg2)) then 1 else 0
-  | Node1("!", arg1)                  -> if ((recursivePath arg1) == 1) then 0 else 1 
+  | Node1("!", arg1)                    -> if ((recursivePath arg1) == 1) then 0 else 1 
    
 ;;
 

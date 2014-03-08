@@ -22,6 +22,7 @@
 %left PLUS MINUS        /* lowest precedence */
 %left TIMES DIV         /* medium precedence */
 %nonassoc UMINUS        /* highest precedence */
+
 %start main             /* the entry point */
 %type <ParseTree.parseTree> main
 %type <ParseTree.parseTree> globalVars
@@ -97,7 +98,7 @@ rawvalue:
  | rawvalue DIV rawvalue                      { Node2("/", $1, $3) }         
  | rawvalue MOD rawvalue                      { Node2("%", $1, $3) }
  | rawvalue EXP rawvalue                      { Node2("^", $1, $3) }
- /*| MINUS rawvalue %prec UMINUS                { - $2 } */
+ | MINUS rawvalue %prec UMINUS                { Node1("-",$2) } 
   
  | rawvalue AND rawvalue                      { Node2("&&", $1, $3) }
  | rawvalue OR rawvalue                       { Node2("||", $1, $3) }
