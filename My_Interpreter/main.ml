@@ -76,6 +76,13 @@ let rec recursivePath inputTree =
        (processAssign name (Leaf(newValue))); newValue
   in
   
+  (* Look up for the stream in the global binding table, may need to check again *)
+  let processStream streamName = 
+    try 
+      (MapOfVariables.find ("#" (string_of_int streamName)) !globalVariables)
+    with Not_found
+  in
+
   let print arg =
     outputStream := (recursivePath arg) :: !outputStream;
     0
@@ -138,7 +145,7 @@ let storeInput =
         (* extract each line of int *)
         let anIntList = (List.map int_of_string (Str.split (Str.regexp " ") (read_line ()))); 
         (* store them in the globalVar map *)
-        globalVar := (VarMap.add "$" ^ )
+        globalVar := (VarMap.add "#" ^ )
 ;;
 
 
