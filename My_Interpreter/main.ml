@@ -48,7 +48,7 @@ let rec recursivePath inputTree =
   
   (* Very important, need to check *)
   let processGlobalAssign argName argValue = 
-    globalVariables := MapOfVariables.add argVName (recursivePath argVValue) !globalVariables;  
+    globalVariables := MapOfVariables.add argVName argValue !globalVariables;  
   in
   
   (* Seem look for a variable's name and return its associated value *)
