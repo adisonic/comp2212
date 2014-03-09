@@ -96,14 +96,14 @@ match inputTree with
   | Node2("globalAssign", Variable(arg1), Leaf(arg2))     -> (processGlobalAssign arg1 arg2) (* Important, Need to check *)
   | Node2("globalMultiAssign", arg1, arg2)                -> (recursivePath arg1); (recursivePath arg2)
    
-  | Node2("if", arg1, arg2)             -> (processIf arg1 arg2)
-  | Node3("if", arg1, arg2, arg3)       -> (processIfElse arg1 arg2 arg3)
-  | Node1("while", arg1, arg2)          -> (processWhile arg1 arg2)
+  | Node2("if", arg1, arg2)             -> (processIf arg1 arg2) (* done *)
+  | Node3("if", arg1, arg2, arg3)       -> (processIfElse arg1 arg2 arg3) (* done *)
+  | Node1("while", arg1, arg2)          -> (processWhile arg1 arg2) (* done *)
   
-  | Node1("++", arg1)                   -> (processIncrement arg1 1)
-  | Node1("--", arg1)                   -> (processIncrement arg1 (-1)) (* or call processsIncrement with -1 *)
-  | Node2("+=", Variable(arg1), arg2)   -> (processIncrement arg1 (recursivePath arg2))
-  | Node2("-=", Variable(arg1), arg2)   -> (processIncrement arg1 (-(recursivePath arg2)))
+  | Node1("++", arg1)                   -> (processIncrement arg1 1) (* done *)
+  | Node1("--", arg1)                   -> (processIncrement arg1 (-1)) (* or call processsIncrement with -1 *) (* done *)
+  | Node2("+=", Variable(arg1), arg2)   -> (processIncrement arg1 (recursivePath arg2)) (* done *)
+  | Node2("-=", Variable(arg1), arg2)   -> (processIncrement arg1 (-(recursivePath arg2))) (* done *)
 
   | Node1("-", arg1)                    -> -(recursivePath arg1) (* This one is negation of some value *)
   | Node2("+", arg1, arg2)              -> (recursivePath arg1) + (recursivePath arg2)
