@@ -64,7 +64,7 @@ let rec recursivePath inputTree =
   (* Assign value to a variable name; value could be a tree, that needed to be evaluated!! *)
   let processAssign name value = 
     if ((name = "NUMBER_OF_STREAM") || (name "STREAM_LENGTH")) then 
-        (Printf.fprintf stderr "The variable '%s' is predefined in the program and cannot be used" name);
+        (Printf.fprintf stderr "The variable '%s' is predefined in the program and cannot be used" name)
     else 
       (* If it's a global variable then save it here  *)
       (VarMap.find name !globalVariables);
