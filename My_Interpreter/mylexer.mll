@@ -34,15 +34,14 @@ rule token = parse
     | ')'         { RPAREN }
     | '{'         { LCURLYB }
     | '}'         { RCURLYB }  
-    | "stream[["  { OPENSTREAM }
-    | "]]"        { CLOSESTREAM }  (* end of categ *)
+    | "stream["   { OPENSTREAM }
+    | ']'         { CLOSESTREAM }  (* end of categ *)
     | "if"        { IF }
     | "then"      { THEN } (* use in if ... then ... else, but maybe not needed *)
     | "else"      { ELSE } 
     | "while"     { WHILE }
-    | "else_if"   { ELSE_IF } (* not handle yet *)
     | "true"      { TRUE }
     | "false"     { FALSE }  (* end of categ *)
     | ['a'-'z''A'-'Z''_']['a'-'z''A'-'Z''_''0'-'9']* as id { STRING( id ) } (* identifier *)
-    | eof      { raise Eof }
+    | eof         { raise Eof }
   

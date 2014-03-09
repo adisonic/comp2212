@@ -86,15 +86,15 @@ match inputTree with
   | Variable(name)                      -> (processVariable name) 
   | Node1("streamValue", streamName)    -> (processStream streamName) 
   
-  | Node2("MainwithGlobalVars", arg1, arg2)   -> (recursivePath arg1); (recursivePath arg2)
+  | Node2("MainwithGlobalVars", arg1, arg2)      -> (recursivePath arg1); (recursivePath arg2)
   | Node2("assign", Variable(name), Leaf(value)) -> (processAssign) (* normal assignment *)
                                         
   (* done *)
-  | Node1("bodyEnding", arg1)           -> (processBody arg1) (* ok *)
-  | Node2("bodyExtend", arg1, arg2)     -> (processBodyextend arg1 arg2) (* ok *)
+  | Node1("bodyOneSentence", arg1)             -> (processBody arg1) (* ok *)
+  | Node2("bodyManySentences", arg1, arg2)     -> (processBodyextend arg1 arg2) (* ok *)
   
   | Node2("globalAssign", Variable(arg1), Leaf(arg2))     -> (processGlobalAssign arg1 arg2) (* Important, Need to check *)
-  | Node2("globalAssignExtending", arg1, arg2)            -> (recursivePath arg1); (recursivePath arg2)
+  | Node2("globalMultiAssign", arg1, arg2)                -> (recursivePath arg1); (recursivePath arg2)
    
   | Node2("if", arg1, arg2)             -> (processIf arg1 arg2)
   | Node3("if", arg1, arg2, arg3)       -> (processIfElse arg1 arg2 arg3)

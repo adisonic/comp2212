@@ -41,12 +41,12 @@ main:
 
 globalVars: 
  | STRING ASSIGN rawvalue SEMI_COLON              { Node2("globalAssign", Variable($1), $3)}
- | STRING ASSIGN rawvalue SEMI_COLON globalVars   { Node2("globalAssignExtending", Node2("globalAssign", $1, $3), $5)}  /*Check main to see if handled properly*/
+ | STRING ASSIGN rawvalue SEMI_COLON globalVars   { Node2("globalMultiAssign", Node2("globalAssign", $1, $3), $5)}  /*Check main to see if handled properly*/
 ;
   
 body:   
-     sentence                                 { Node1("bodyEnding", $1) } 
-     | sentence body                          { Node2("bodyExtend", $1, $2) }
+     sentence                                 { Node1("bodyOneSentence", $1) } 
+     | sentence body                          { Node2("bodyManySentences", $1, $2) }
 ;
 
 /* binding: variable and its value */
