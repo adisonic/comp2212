@@ -12,7 +12,6 @@ rule token = parse
     | '-'         { MINUS }
     | '*'         { TIMES }
     | '/'         { DIV }
-    | '^'         { EXP }
     | '%'         { MOD } (* end of categ *)
     | "begin"     { BEGIN }
     | ";"         { SEMI_COLON }               
