@@ -34,6 +34,7 @@ rule token = parse
     | ')'         { RPAREN }
     | '{'         { LCURLYB }
     | '}'         { RCURLYB }  
+    | "print"     { PRINT}
     | "stream["   { OPENSTREAM }
     | ']'         { CLOSESTREAM }  (* end of categ *)
     | "if"        { IF }

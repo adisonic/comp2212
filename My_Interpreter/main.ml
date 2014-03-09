@@ -5,7 +5,9 @@ open ParseTree;;
 
 module MapOfVariables = Map.Make(String);;
 let globalVariables = ref MapOfVariables.empty;;
-let localVariables = ref MapOfVariables.empty (* We may not need, but I'll just put it here, we can just remove later *)
+let localVariables = ref MapOfVariables.empty;; (* We may not need, but I'll just put it here, we can just remove later *)
+let streamBinding = ref MapOfVariables.empty;;
+let intListRefTable = ref MapOfVariables;;
 
 (*The below variables are to store information on the stream*)
 let streamCount = ref 0;;
@@ -61,7 +63,7 @@ let rec recursivePath inputTree =
   (* importtant function used incre/incre_and_assign, decree/decree_and_assing...   *)  
   (* Assign value to a variable name; value could be a tree, that needed to be evaluated!! *)
   let processAssign name value = 
-    if ((name = "COUNT") || (name "LENGTH")) then 
+    if ((name = "NUMBER_OF_STREAM") || (name "STREAM_LENGTH")) then 
         (Printf.fprintf stderr "The variable '%s' is predefined in the program and cannot be used" name);
     else 
       (* If it's a global variable then save it here  *)
@@ -79,11 +81,11 @@ let rec recursivePath inputTree =
   (* Look up for the stream in the global binding table, may need to check again *)
   let processStream streamName = 
     try 
-      (MapOfVariables.find ("#" (string_of_int streamName)) !globalVariables)
+      (MapOfVariables.find ("#" (string_of_int streamName)) !streamBinding)
     with Not_found
   in
 
-  let print arg =
+  let processPrint arg =
     outputStream := (recursivePath arg) :: !outputStream;
     0
     in
@@ -91,7 +93,7 @@ let rec recursivePath inputTree =
 match inputTree with
   | Leaf(argInt)                        -> argInt (* ok *)
   | Variable(name)                      -> (processVariable name) 
-  | Node1("streamValue", streamName)    -> (processStream streamName) 
+  | Node1("streamValue", streamName)    -> (Value streamName) 
   
   | Node2("MainwithGlobalVars", arg1, arg2)      -> (recursivePath arg1); (recursivePath arg2)
   | Node2("assign", Variable(name), Leaf(value)) -> (processAssign) (* normal assignment *)
@@ -107,6 +109,9 @@ match inputTree with
   | Node3("if", arg1, arg2, arg3)       -> (processIfElse arg1 arg2 arg3) (* done *)
   | Node1("while", arg1, arg2)          -> (processWhile arg1 arg2) (* done *)
   
+  | Node1("print", rawvalue)            -> (processPrint rawvalue)
+  | Node2("printVarible", variable)     -> (processPrint variable)
+
   | Node1("++", arg1)                   -> (processIncrement arg1 1) (* done *)
   | Node1("--", arg1)                   -> (processIncrement arg1 (-1)) (* or call processsIncrement with -1 *) (* done *)
   | Node2("+=", Variable(arg1), arg2)   -> (processIncrement arg1 (recursivePath arg2)) (* done *)
@@ -132,36 +137,56 @@ match inputTree with
    
 ;;
 
+(* Read line by line and return a list containing refs to each int stream *)
+let collect_lists count = match count with
+  | 0 -> []
+  | n -> ref (List.map int_of_string (Str.split (Str.regexp " ") (read_line ()))) :: collect_lists (x - 1)
+
 (* Store input in a map *)
 let storeInput = 
-    let count := (read_int());
-    globalVars := (VarMap.add("Count") count !globalVars);
-    let length := (read_int());
-    globalVars := (VarMap.add("Length") length !globalVars);
+    (* store the first 2 lines that contains information of stream *)
+    let streamCount := (read_int());
+    globalVars := (MapOfVariables.add "NUMBER_OF_STREAM" streamCount !globalVars);
+    let streamLength := (read_int());
+    globalVars := (MapOfVariables.add "STREAM_LENGTH" streamLength !globalVars);
 
-    let bind label value 
-
-    while (!count != 0) do 
-        (* extract each line of int *)
-        let anIntList = (List.map int_of_string (Str.split (Str.regexp " ") (read_line ()))); 
-        (* store them in the globalVar map *)
-        globalVar := (VarMap.add "#" ^ )
+    (* Then consume the rest, return inputStream which is a list of ref *)
+    inputStream := collect_list count
+    
 ;;
 
+let addElementToMap name value = globalVariables := (MapOfVariables.add name value !globalVariables)
 
+(* Create keys in the map, each key point to element of the head of the stream *)
+let rec bindStream n inStream = 
+  match inStream with 
+    | [] -> ref ()
+    | car :: cdr -> addElementToMap ("#" ^ (string_of_int n)) (hd !car); (*  *) 
+                    car := (tl !car);
+                    let theRest := ref cdr in 
+                      addElementToMap (n + 1) theRest
+
+(* Print a list to the specifired format to stdout *)
+let rec printList alist = match alist with
+  | [] -> ()
+  | hd::tl -> (Printf.printf "%d " hd); printList tl
 
 let start =
-    inputGetter;
+    storeInput;
     try
         let lexbuf = Lexing.from_channel (open_in Sys.argv.(1)) in
             while true do
-                let result = (myParser.main MyLexer.token lexbuf) in
-                        flush stdout;    
-                        recursivePath result;
-            done;
+                let result = (myParser.main MyLexer.token lexbuf) in (* Need to check this part again *)
+                    for i = 0 to !streamLength-1 do
+                    streamBinding := MapOfVariables.empty;
+                    bindStream 0 inputStream;
+                    flush stdout;    
+                    recursivePath result;
+            done
     with 
         MyLexer.Eof -> 
             print_int (List.length !outputStream);
             print_string "\n";
             printList (List.rev !outputStream);
-            (exit 0)
+            print_string "\n";
+            exit 0

@@ -49,8 +49,7 @@ body:
      | sentence body                          { Node2("bodyManySentences", $1, $2) }
 ;
 
-/* binding: variable and its value */
-
+/* binding: variables */
 variable:
    | STRING                                   { Variable($1)}
    | OPENSTREAM rawvalue CLOSESTREAM          { Node1("streamValue", $2) }
@@ -70,8 +69,12 @@ cond_statement:
 while_statement: /* loop */
    | WHILE LPAREN rawvalue RPAREN LCURLYB body RCURLYB          { Node2 ("while", $3, $6) }                       
 ;
-   
-   
+
+/* print sentence will add elements to the output stream */
+print: 
+   | PRINT LPAREN rawvalue RPAREN SEMI_COLON        { Node1("print", $3) }
+   | PRINT LPAREN variable RPAREN SEMI_COLON        { Node1("printVariable", $3)}
+
 sentence: /* is a statement form a complete instruction, could include a semicolon (?) */
    | rawvalue SEMI_COLON               { $1 }              
    | variable ASSIGN rawvalue SEMI_COLON          { Node2("assign", $1, $3) }  
