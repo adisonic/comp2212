@@ -63,7 +63,7 @@ let rec recursivePath inputTree =
   (* importtant function used incre/incre_and_assign, decree/decree_and_assing...   *)  
   (* Assign value to a variable name; value could be a tree, that needed to be evaluated!! *)
   let processAssign name value = 
-    if ((name = "NUMBER_OF_STREAM") || (name "STREAM_LENGTH")) then 
+    if ((name = "NUMBER_OF_STREAM") || (name = "STREAM_LENGTH")) then 
         (Printf.fprintf stderr "The variable '%s' is predefined in the program and cannot be used" name)
     else 
       (* If it's a global variable then save it here  *)
@@ -93,7 +93,7 @@ let rec recursivePath inputTree =
 match inputTree with
   | Leaf(argInt)                        -> argInt (* ok *)
   | Variable(name)                      -> (processVariable name) 
-  | Node1("streamValue", streamName)    -> (Value streamName) 
+  | Node1("streamValue", streamName)    -> (processStream streamName) 
   
   | Node2("MainwithGlobalVars", arg1, arg2)      -> (recursivePath arg1); (recursivePath arg2)
   | Node2("assign", Variable(name), Leaf(value)) -> (processAssign) (* normal assignment *)
