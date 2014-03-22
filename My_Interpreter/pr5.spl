@@ -1,0 +1,9 @@
+odd = 0; 
+begin {
+    if((odd % 2) == 0) {
+        print(stream[0]);
+    }
+    odd++;
+}
+
+
