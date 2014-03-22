@@ -1,0 +1,4 @@
+begin {
+	print(stream[0]);
+	print(stream[1]);
+}
