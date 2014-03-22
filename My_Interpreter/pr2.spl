@@ -1,0 +1,5 @@
+/* Perform operation on element by element */
+begin {
+    print ( stream[0] - (2*stream[1]) ); 
+}
+
